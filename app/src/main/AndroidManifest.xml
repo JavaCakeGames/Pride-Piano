@@ -3,6 +3,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.javacakegames.pride">
 
+  <uses-permission android:name="android.permission.VIBRATE" />
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="Pride Piano"

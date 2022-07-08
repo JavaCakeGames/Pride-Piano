@@ -11,6 +11,7 @@ import static android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -26,6 +27,8 @@ public class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
     if (Build.VERSION.SDK_INT >= 19) {
       getWindow().getDecorView().setSystemUiVisibility(
