@@ -21,7 +21,7 @@ public class BlackNote extends Note {
   }
 
   @Override
-  public boolean process(float screenX, float screenY, boolean down) {
+  public boolean process(float screenX, float screenY, boolean down, int index, boolean silent) {
     if (screenY < getParent().getHeight() * 0.666666667f) {
       int note = (int) Math.floor((screenX - getWidth() / 2) / getParent().getWidth() * 7);
       if (note == index && pitch != 0) {

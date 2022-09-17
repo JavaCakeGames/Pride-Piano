@@ -11,6 +11,7 @@ import static android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -49,6 +51,12 @@ public class MainActivity extends Activity {
     if (Build.VERSION.SDK_INT >= 28) { // Support camera cutouts
       getWindow().getAttributes().layoutInDisplayCutoutMode =
         WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+    }
+
+    AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+    if (currentVolume >= 15) { // todo detect volume changes, scale notes with system volume (clipping reduction)
+      Toast.makeText(this, "Loud volume results in distortion.", Toast.LENGTH_SHORT).show();
     }
 
     this.gameView = new GameView(this);

@@ -192,7 +192,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     boolean notePlayed;
     for (int i = notes.length - 1; i >= 0; i--) {
-      notePlayed = notes[i].process(x, y, down);
+      notePlayed = notes[i].process(x, y, down, 0, false);
       if (notePlayed) break;
     }
 

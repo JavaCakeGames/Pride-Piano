@@ -21,7 +21,7 @@ public class WhiteNote extends Note {
   }
 
   @Override
-  public boolean process(float screenX, float screenY, boolean down) {
+  public boolean process(float screenX, float screenY, boolean down, int index, boolean silent) {
     int note = (int) (screenX / getParent().getWidth() * 7);
     if (note == index && pitch != 0) {
       setPressed(down);

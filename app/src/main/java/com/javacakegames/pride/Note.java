@@ -30,13 +30,7 @@ public class Note {
     this.parent = parent;
     this.colour = colour;
     this.pitch = pitch;
-
-    float[] hsv = new float[3];
-    Color.colorToHSV(colour, hsv);
-    hsv[1] *= 0.5f;
-    if (hsv[2] == 0) hsv[2] += 0.2f; // black
-    else if (hsv[2] == 1) hsv[2] -= 0.2f; // white
-    this.pressedColour = Color.HSVToColor(hsv);
+    this.pressedColour = calcPressedColour(colour);
   }
 
   public void update() {
@@ -58,8 +52,16 @@ public class Note {
     previousPressed = pressed;
   }
 
-  // Override me
-  public boolean process(float screenX, float screenY, boolean down) {
+
+  /** Process finger down/up/move event. Overriden by BlackNote and WhiteNote.
+   * @param screenX Finger X position
+   * @param screenY Finger Y position
+   * @param down Was the finger placed onto the screen? As opposed to raised.
+   * @param index The finger's index. Used for tracking movement without raising.
+   * @param silent True if we shouldn't make a racket (app in background).
+   * @return True if the note has done anything with the event. Prevents propagation.
+   */
+  public boolean process(float screenX, float screenY, boolean down, int index, boolean silent) {
     return false;
   }
 
@@ -93,6 +95,15 @@ public class Note {
 
   float getWidth() {
     return width;
+  }
+
+  private int calcPressedColour(int colour) {
+    float[] hsv = new float[3];
+    Color.colorToHSV(colour, hsv);
+    hsv[1] *= 0.5f;
+    if (hsv[2] == 0) hsv[2] += 0.2f; // black
+    else if (hsv[2] == 1) hsv[2] -= 0.2f; // white
+    return Color.HSVToColor(hsv);
   }
 
 }
