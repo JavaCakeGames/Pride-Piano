@@ -2,6 +2,7 @@ package com.javacakegames.pride;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -37,8 +38,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
   final int soundID;
 
-  public GameView(Context context) {
+  private boolean canvasDirty = true;
+  private boolean plain;
+
+  public GameView(Context context, boolean plain) {
     super(context);
+    this.plain = plain;
 
     paint.setDither(false);
 
@@ -57,14 +62,48 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
     soundID = soundPool.load(getContext(), R.raw.gb4, 1);
 
+    boolean darkMode = false;
+    // todo looks bad in dark mode so commented out
+    /*if (Build.VERSION.SDK_INT > 8) {
+      int uiMode = getResources().getConfiguration().uiMode;
+      if ((uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+        darkMode = true;
+      }
+    }*/
+
+    Integer plainWhite = plain ? 0xffffffff : null;
+    if (plainWhite != null && darkMode) plainWhite = 0xff000000;
+    Integer plainBlack = plain ? 0x00000000 : null;
+    if (plainBlack != null && darkMode) plainBlack = 0x00ffffff;
+
     for (int i = 0; i < 7; i++) {
-      notes[i] = new WhiteNote(i, this);
+      notes[i] = new WhiteNote(i, this, plainWhite);
     }
     for (int i = 0; i < 6; i++) {
-      notes[i + 7] = new BlackNote(i, this);
+      notes[i + 7] = new BlackNote(i, this, plainBlack);
     }
 
+
     getHolder().addCallback(this);
+
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+      postOnAnimation(new Runnable() {
+        @Override
+        public void run() {
+          drawCanvas();
+          postOnAnimation(this);
+        }
+      });
+    } else {
+      TimerTask renderTask;
+      renderTask = new TimerTask() {
+        @Override
+        public void run() {
+          drawCanvas();
+        }
+      };
+      timer.schedule(renderTask, 0, 16);
+    }
 
   }
 
@@ -103,11 +142,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
       }*/
 
-      paint.setAntiAlias(true);
-      paint.setStyle(Paint.Style.STROKE);
-      paint.setStrokeWidth(5);
-      paint.setColor(0xff66338b);
-      canvas.drawCircle(50, 50, 25, paint);
+      if (!plain) {
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(5);
+        paint.setColor(0xff66338b);
+        canvas.drawCircle(50, 50, 25, paint);
+      }
 
     }
   }
@@ -125,24 +166,33 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
       switch (event.getActionMasked()) {
         case MotionEvent.ACTION_DOWN:
         case MotionEvent.ACTION_POINTER_DOWN:
-        case MotionEvent.ACTION_MOVE:
           int index = event.getActionIndex();
-          processTouch(event.getX(index), event.getY(index), true);
+          processTouch(event.getX(index), event.getY(index), event.getPointerId(index), true);
+          break;
+        case MotionEvent.ACTION_MOVE:
+          // https://stackoverflow.com/a/10954685
+
+          int pointerCount = event.getPointerCount();
+          for(int pointerIndex = 0; pointerIndex < pointerCount; pointerIndex++)
+          {
+            int pointerId = event.getPointerId(pointerIndex);
+            processTouch(event.getX(pointerIndex), event.getY(pointerIndex), pointerId, true);
+          }
           break;
         case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
           index = event.getActionIndex();
-          processTouch(event.getX(index), event.getY(index), false);
+          processTouch(event.getX(index), event.getY(index), event.getPointerId(index), false);
           break;
       }
     } else {
       switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
         case MotionEvent.ACTION_MOVE:
-          processTouch(event.getX(), event.getY(), true);
+          processTouch(event.getX(), event.getY(), 0, true);
           break;
         case MotionEvent.ACTION_UP:
-          processTouch(event.getX(), event.getY(), false);
+          processTouch(event.getX(), event.getY(), 0, false);
           break;
       }
     }
@@ -175,6 +225,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
   }
 
   void drawCanvas() {
+
+    if (!canvasDirty) return;
+
     Canvas canvas = null;
     try {
       canvas = getHolder().lockCanvas();
@@ -184,16 +237,30 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     } finally {
       if (canvas != null) {
         getHolder().unlockCanvasAndPost(canvas);
+        canvasDirty = false;
       }
     }
   }
 
-  private void processTouch(float x, float y, boolean down) {
+  public void dirtyCanvas() {
+    canvasDirty = true;
+  }
+
+  private void processTouch(float x, float y, int index, boolean down) {
 
     boolean notePlayed;
     for (int i = notes.length - 1; i >= 0; i--) {
-      notePlayed = notes[i].process(x, y, down, 0, false);
-      if (notePlayed) break;
+      notePlayed = notes[i].process(x, y, down, index, false);
+      if (notePlayed) {
+        // Previous white or black note
+        // todo check all of them - under extreme circumstances, notes get stuck
+        if (i > 0) notes[i - 1].setPressed(false, index);
+        if (i < notes.length - 1) notes[i + 1].setPressed(false, index);
+        if (i < 5) notes[i + 8].setPressed(false, index); // black to white
+        if (i > 6) notes[i - 7].setPressed(false, index); // white left to black
+        if (i > 6) notes[i - 6].setPressed(false, index); // white right to black
+        break;
+      }
     }
 
     /*performHapticFeedback(HapticFeedbackConstants.KEYBOARD_PRESS);

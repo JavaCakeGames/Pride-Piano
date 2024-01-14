@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -19,18 +20,21 @@ public class Note {
   private final int index;
   private final int volume = 1;
   private final GameView parent;
+  private final boolean plain;
 
   private boolean pressed, previousPressed;
+  private int pressedPointer;
   private float width;
   private int playID;
 
-  public Note(int index, GameView parent, boolean black, int colour, float pitch) {
+  public Note(int index, GameView parent, boolean black, int colour, float pitch, boolean plain) {
     this.black = black;
     this.index = index;
     this.parent = parent;
     this.colour = colour;
     this.pitch = pitch;
     this.pressedColour = calcPressedColour(colour);
+    this.plain = plain;
   }
 
   public void update() {
@@ -38,16 +42,18 @@ public class Note {
       if (pressed) {
         playID = parent.play(pitch);
         // https://source.android.com/devices/input/haptics/haptics-ux-design
+        // Doesn't work
+        // todo getting this each time might be costly?
         Vibrator vibrator = (Vibrator) parent.getContext().getSystemService(Context.VIBRATOR_SERVICE);
-        if (Build.VERSION.SDK_INT >= 8) {
-          parent.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-        } else {
-          vibrator.vibrate(20);
-        }
+//        if (Build.VERSION.SDK_INT >= 8) {
+//          parent.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+//        } else {
+        AudioManager audioMan = (AudioManager) parent.getContext().getSystemService(Context.AUDIO_SERVICE);
+        if (audioMan.getRingerMode() != AudioManager.RINGER_MODE_SILENT) vibrator.vibrate(50);
       } else { // released
         parent.stop(playID);
       }
-      parent.drawCanvas(); // todo optimise to not do full redraw
+      parent.dirtyCanvas();
     }
     previousPressed = pressed;
   }
@@ -75,6 +81,9 @@ public class Note {
       left += width * 0.75f;
       right += width * 0.25f;
       height *= 0.666666667f;
+    } else if (plain) {
+      left += width * 0.025f;
+      right -= width * 0.025f;
     }
     canvas.drawRect(left, 0, right, height, paint);
   }
@@ -85,8 +94,13 @@ public class Note {
     this.width = screenWidth / divisor;
   }
 
-  void setPressed(boolean pressed) {
-    this.pressed = pressed;
+  void setPressed(boolean pressed, int index) {
+    if (!pressed && index == this.pressedPointer) {
+      this.pressed = false;
+    } else if (pressed) {
+      this.pressed = pressed;
+      this.pressedPointer = index;
+    }
   }
 
   View getParent() {

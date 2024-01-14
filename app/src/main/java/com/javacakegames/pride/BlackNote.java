@@ -1,5 +1,8 @@
 package com.javacakegames.pride;
 
+import android.content.res.Configuration;
+import android.os.Build;
+
 public class BlackNote extends Note {
 
   private static final int[] blackColours = {
@@ -14,21 +17,23 @@ public class BlackNote extends Note {
   private final int index;
   private final float pitch;
 
-  public BlackNote(int index, GameView parent) {
-    super(index, parent, true, blackColours[index], blackPitches[index]);
+  public BlackNote(int index, GameView parent, Integer plainColour) {
+    super(index, parent, true, plainColour != null ? (blackColours[index] & 0xff000000) | plainColour : blackColours[index], blackPitches[index], plainColour != null);
     this.index = index;
     this.pitch = blackPitches[index];
+
   }
 
   @Override
   public boolean process(float screenX, float screenY, boolean down, int index, boolean silent) {
     if (screenY < getParent().getHeight() * 0.666666667f) {
       int note = (int) Math.floor((screenX - getWidth() / 2) / getParent().getWidth() * 7);
-      if (note == index && pitch != 0) {
-        setPressed(down);
+      if (note == this.index && pitch != 0) {
+        setPressed(down, index);
         return true;
       }
     }
+    setPressed(false, index);
     return false;
   }
 }
