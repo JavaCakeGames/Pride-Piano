@@ -14,24 +14,16 @@ public class BlackNote extends Note {
     0.984042315523848f, 1.09870595966501f, 1.2267649207462f
   };
 
-  private final int index;
-  private final float pitch;
-
   public BlackNote(int index, GameView parent, Integer plainColour) {
     super(index, parent, true, plainColour != null ? (blackColours[index] & 0xff000000) | plainColour : blackColours[index], blackPitches[index], plainColour != null);
-    this.index = index;
-    this.pitch = blackPitches[index];
-
   }
 
   @Override
   public boolean process(float screenX, float screenY, boolean down, int index, boolean silent) {
     if (screenY < getParent().getHeight() * 0.666666667f) {
       int note = (int) Math.floor((screenX - getWidth() / 2) / getParent().getWidth() * 7);
-      if (note == this.index && pitch != 0) {
-        setPressed(down, index);
-        return true;
-      }
+      if (processNote(note, down)) return true;
+      // todo why is this different?
     }
     setPressed(false, index);
     return false;

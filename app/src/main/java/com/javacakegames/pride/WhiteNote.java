@@ -11,23 +11,14 @@ public class WhiteNote extends Note {
     0.931289107250668f, 1.03979104198895f, 1.16096702220402f, 1.29630068053494f
   };
 
-  private final int index;
-  private final float pitch;
-
   public WhiteNote(int index, GameView parent, Integer plainColour) {
     super(index, parent, false, plainColour != null ? plainColour : whiteColours[index], whitePitches[index], plainColour != null);
-    this.index = index;
-    this.pitch = whitePitches[index];
   }
 
   @Override
   public boolean process(float screenX, float screenY, boolean down, int index, boolean silent) {
     int note = (int) (screenX / getParent().getWidth() * 7);
-    if (note == this.index && pitch != 0) {
-      setPressed(down, index);
-      return true;
-    }
-    return false;
+    return processNote(note, down);
   }
 
 }

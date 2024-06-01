@@ -2,7 +2,7 @@ package com.javacakegames.pride;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Configuration;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,40 +10,33 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
-  private final Paint paint = new Paint();
+  private final AudioManager audioManager;
+  private final int maxSystemVolume;
+  private float noteVolume; // 0-1
+
+  private final Paint paint = new Paint(0); // No antialias
   private final SoundPool soundPool;
 
-  private final boolean[]
-    whiteNotesPressed = new boolean[7],
-    previousWhiteNotesPressed = new boolean[7],
-    blackNotesPressed = new boolean[6],
-    previousBlackNotesPressed = new boolean[6];
-
   private final Note[] notes = new Note[13];
-
-  private float noteWidth;
 
   final int soundID;
 
   private boolean canvasDirty = true;
-  private boolean plain;
 
   public GameView(Context context, boolean plain) {
     super(context);
-    this.plain = plain;
+
+    this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+    this.maxSystemVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
     paint.setDither(false);
 
@@ -127,29 +120,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
       super.draw(canvas);
       canvas.drawColor(Color.GRAY);
 
-      paint.setAntiAlias(false);
-      paint.setStyle(Paint.Style.FILL);
       for (Note note : notes)
         note.draw(paint, canvas);
-
-      noteWidth /= 2;
-      /*for (int i = 0; i < 6; i++) {
-        if (blackNoteColours[i] != 0x00000000) {
-          paint.setColor(blackNoteColours[i]);
-          float left = i * (noteWidth * 2) + (noteWidth * 1.5f);
-          float right = left + noteWidth;
-          canvas.drawRect(left, 0, right, getHeight() * 0.666666667f, paint);
-        }
-      }*/
-
-      if (!plain) {
-        paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(5);
-        paint.setColor(0xff66338b);
-        canvas.drawCircle(50, 50, 25, paint);
-      }
-
     }
   }
 
@@ -157,16 +129,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
   @Override
   public boolean onTouchEvent(MotionEvent event) {
 
-    Arrays.fill(whiteNotesPressed, Boolean.FALSE);
-    Arrays.fill(blackNotesPressed, Boolean.FALSE);
-
     // While multitouch was added in API 5, I don't know how to do it without
     // the stuff introduced in API 8, so < 8 gets no multitouch support here.
     if (Build.VERSION.SDK_INT >= 8) {
+      int index;
       switch (event.getActionMasked()) {
         case MotionEvent.ACTION_DOWN:
         case MotionEvent.ACTION_POINTER_DOWN:
-          int index = event.getActionIndex();
+          index = event.getActionIndex();
           processTouch(event.getX(index), event.getY(index), event.getPointerId(index), true);
           break;
         case MotionEvent.ACTION_MOVE:
@@ -203,14 +173,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
   }
 
   int play(float pitch) { // todo move to own thread
-    return soundPool.play(soundID, 1, 1, 5, 0, pitch);
+    if (!canvasDirty) { // First occurrence this frame
+      noteVolume = Math.min(2/3f, (float) audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) / maxSystemVolume);
+    }
+    return soundPool.play(soundID, noteVolume, noteVolume, 5, 0, pitch);
   }
 
   private final Timer timer = new Timer();
-  private TimerTask timerTask;
+
   void stop(int id) {
     final float[] volume = {1};
-    timerTask = new TimerTask() {
+    TimerTask timerTask = new TimerTask() {
       @Override
       public void run() {
         volume[0] -= 0.04f;
@@ -247,29 +220,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
   }
 
   private void processTouch(float x, float y, int index, boolean down) {
-
     boolean notePlayed;
     for (int i = notes.length - 1; i >= 0; i--) {
       notePlayed = notes[i].process(x, y, down, index, false);
       if (notePlayed) {
-        // Previous white or black note
-        // todo check all of them - under extreme circumstances, notes get stuck
-        if (i > 0) notes[i - 1].setPressed(false, index);
-        if (i < notes.length - 1) notes[i + 1].setPressed(false, index);
-        if (i < 5) notes[i + 8].setPressed(false, index); // black to white
-        if (i > 6) notes[i - 7].setPressed(false, index); // white left to black
-        if (i > 6) notes[i - 6].setPressed(false, index); // white right to black
-        break;
+        // Set all other notes to not pressed by this pointer index
+        // Comparing adjacent notes isn't good enough with fast finger movements
+        for (int j = notes.length - 1; j >= 0; j--) {
+          if (j != i) notes[j].setPressed(false, index);
+        }
+        return;
       }
     }
-
-    /*performHapticFeedback(HapticFeedbackConstants.KEYBOARD_PRESS);
-    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_RELEASE);
-
-    VibrationEffect vibrationEffect = VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK);
-    VibrationEffect vibrationEffect = VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK);
-    vibrator.cancel();
-    vibrator.vibrate(vibrationEffect);*/
 
   }
 

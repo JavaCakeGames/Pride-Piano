@@ -5,11 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.AudioManager;
-import android.os.Build;
-import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
-import android.view.HapticFeedbackConstants;
 import android.view.View;
 
 public class Note {
@@ -40,7 +36,8 @@ public class Note {
   public void update() {
     if (pressed != previousPressed) {
       if (pressed) {
-        playID = parent.play(pitch);
+        playID = parent.play(pitch); // todo handler.post(runnable);
+        // https://github.com/libgdx/libgdx/pull/6243
         // https://source.android.com/devices/input/haptics/haptics-ux-design
         // Doesn't work
         // todo getting this each time might be costly?
@@ -71,6 +68,14 @@ public class Note {
     return false;
   }
 
+  boolean processNote(int note, boolean isDown) {
+    if (note == this.index && pitch != 0) {
+      setPressed(isDown, index);
+      return true;
+    }
+    return false;
+  }
+
   public void draw(Paint paint, Canvas canvas) {
     int colour = pressed ? this.pressedColour : this.colour;
     paint.setColor(colour);
@@ -86,12 +91,24 @@ public class Note {
       right -= width * 0.025f;
     }
     canvas.drawRect(left, 0, right, height, paint);
+
+    if (!black && index == 0 && !plain) {
+      float halfWidth = width / 2;
+      paint.setAntiAlias(true);
+      paint.setStyle(Paint.Style.STROKE);
+      paint.setStrokeWidth(halfWidth * 0.05f);
+      paint.setColor(0xff66338b);
+      canvas.drawCircle(halfWidth, height - halfWidth * 1.5f, halfWidth / 2, paint);
+      paint.setAntiAlias(false);
+      paint.setStyle(Paint.Style.FILL);
+    }
   }
 
   public void resize(int screenWidth, int screenHeight) {
     float divisor = black ? 14f : 7f;
     divisor = 7f;
-    this.width = screenWidth / divisor;
+    this.width = screenWidth / 7f;
+    // todo height?
   }
 
   void setPressed(boolean pressed, int index) {
