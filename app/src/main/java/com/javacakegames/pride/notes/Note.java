@@ -24,6 +24,9 @@ public class Note {
   private float width;
   private int playID;
 
+  private static final int circleColour = 0xff66338b;
+  private int circlePressedColour;
+
   private final SoundManager soundMan;
 
   public Note(int index, GameView parent, boolean black, int colour,
@@ -89,8 +92,8 @@ public class Note {
       right += width * 0.3f;
       height *= 0.666666667f;
     } else if (plain) {
-      left += width * 0.025f;
-      right -= width * 0.025f;
+      if (index != 0) left += width * 0.025f;
+      if (index != 6) right -= width * 0.025f;
     }
     canvas.drawRect(left, 0, right, height, paint);
 
@@ -98,10 +101,15 @@ public class Note {
       float halfWidth = width / 2;
       paint.setAntiAlias(true);
       paint.setStyle(Paint.Style.STROKE);
-      paint.setStrokeWidth(halfWidth * 0.05f);
-      paint.setColor(0xff66338b);
-      // todo make me better
-      canvas.drawCircle(halfWidth, height - halfWidth * 1.5f, halfWidth / 2, paint);
+      paint.setStrokeWidth(halfWidth * 0.1f);
+      if (pressed) {
+        if (circlePressedColour == 0)
+          circlePressedColour = calcPressedColour(circleColour);
+        paint.setColor(circlePressedColour);
+      } else {
+        paint.setColor(circleColour);
+      }
+      canvas.drawCircle(halfWidth, height * .816666666666667f, halfWidth / 2, paint);
       paint.setAntiAlias(false);
       paint.setStyle(Paint.Style.FILL);
     }

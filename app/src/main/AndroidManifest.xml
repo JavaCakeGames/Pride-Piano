@@ -14,11 +14,10 @@
     android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 
     <!-- todo https://stackoverflow.com/a/28644266/ -->
-    <!-- android:screenOrientation="landscape" -->
     <activity
       android:name=".activities.PrideActivity"
       android:exported="true"
-
+      android:screenOrientation="landscape"
       android:excludeFromRecents="true"
       android:launchMode="singleTask"
       android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|colorMode|fontWeightAdjustment">
