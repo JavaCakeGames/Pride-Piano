@@ -1,4 +1,6 @@
-package com.javacakegames.pride;
+package com.javacakegames.pride.notes;
+
+import com.javacakegames.pride.GameView;
 
 public class WhiteNote extends Note {
 
@@ -12,13 +14,18 @@ public class WhiteNote extends Note {
   };
 
   public WhiteNote(int index, GameView parent, Integer plainColour) {
-    super(index, parent, false, plainColour != null ? plainColour : whiteColours[index], whitePitches[index], plainColour != null);
+    super(
+      index, parent, false,
+      plainColour != null ? plainColour : whiteColours[index],
+      whitePitches[index], plainColour != null
+    );
   }
 
   @Override
-  public boolean process(float screenX, float screenY, boolean down, int index, boolean silent) {
+  public boolean process(float screenX, float screenY, boolean down,
+                         int pointerId, boolean silent) {
     int note = (int) (screenX / getParent().getWidth() * 7);
-    return processNote(note, down);
+    return processNote(note, down, pointerId);
   }
 
 }

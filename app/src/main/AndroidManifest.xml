@@ -5,6 +5,8 @@
   <uses-feature android:name="android.hardware.audio.output" />
 
   <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="Pride Piano"
@@ -12,10 +14,11 @@
     android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
 
     <!-- todo https://stackoverflow.com/a/28644266/ -->
+    <!-- android:screenOrientation="landscape" -->
     <activity
-      android:name=".PrideActivity"
+      android:name=".activities.PrideActivity"
       android:exported="true"
-      android:screenOrientation="landscape"
+
       android:excludeFromRecents="true"
       android:launchMode="singleTask"
       android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|colorMode|fontWeightAdjustment">
@@ -27,7 +30,7 @@
     </activity>
 
     <activity
-        android:name=".PlainActivity"
+        android:name=".activities.PlainActivity"
         android:label="Plain Piano"
         android:exported="true"
         android:screenOrientation="landscape"

@@ -1,12 +1,14 @@
-package com.javacakegames.pride;
+package com.javacakegames.pride.notes;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.AudioManager;
-import android.os.Vibrator;
 import android.view.View;
+
+import com.javacakegames.pride.GameView;
+import com.javacakegames.pride.Globals;
+import com.javacakegames.pride.SoundManager;
 
 public class Note {
 
@@ -14,7 +16,6 @@ public class Note {
   private final int colour, pressedColour;
   private final float pitch;
   private final int index;
-  private final int volume = 1;
   private final GameView parent;
   private final boolean plain;
 
@@ -23,7 +24,10 @@ public class Note {
   private float width;
   private int playID;
 
-  public Note(int index, GameView parent, boolean black, int colour, float pitch, boolean plain) {
+  private final SoundManager soundMan;
+
+  public Note(int index, GameView parent, boolean black, int colour,
+              float pitch, boolean plain) {
     this.black = black;
     this.index = index;
     this.parent = parent;
@@ -31,46 +35,44 @@ public class Note {
     this.pitch = pitch;
     this.pressedColour = calcPressedColour(colour);
     this.plain = plain;
+    this.soundMan = parent.getSoundMan();
   }
 
   public void update() {
     if (pressed != previousPressed) {
       if (pressed) {
-        playID = parent.play(pitch); // todo handler.post(runnable);
+        playID = soundMan.play(pitch);
         // https://github.com/libgdx/libgdx/pull/6243
         // https://source.android.com/devices/input/haptics/haptics-ux-design
         // Doesn't work
-        // todo getting this each time might be costly?
-        Vibrator vibrator = (Vibrator) parent.getContext().getSystemService(Context.VIBRATOR_SERVICE);
 //        if (Build.VERSION.SDK_INT >= 8) {
 //          parent.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
 //        } else {
-        AudioManager audioMan = (AudioManager) parent.getContext().getSystemService(Context.AUDIO_SERVICE);
-        if (audioMan.getRingerMode() != AudioManager.RINGER_MODE_SILENT) vibrator.vibrate(50);
+        if (Globals.audioMan.getRingerMode() != AudioManager.RINGER_MODE_SILENT)
+          Globals.vibrator.vibrate(33);
       } else { // released
-        parent.stop(playID);
+        soundMan.stop(playID);
       }
       parent.dirtyCanvas();
     }
     previousPressed = pressed;
   }
 
-
   /** Process finger down/up/move event. Overriden by BlackNote and WhiteNote.
    * @param screenX Finger X position
    * @param screenY Finger Y position
    * @param down Was the finger placed onto the screen? As opposed to raised.
-   * @param index The finger's index. Used for tracking movement without raising.
+   * @param pointerId The finger's index. Used for tracking movement without raising.
    * @param silent True if we shouldn't make a racket (app in background).
    * @return True if the note has done anything with the event. Prevents propagation.
    */
-  public boolean process(float screenX, float screenY, boolean down, int index, boolean silent) {
+  public boolean process(float screenX, float screenY, boolean down, int pointerId, boolean silent) {
     return false;
   }
 
-  boolean processNote(int note, boolean isDown) {
+  boolean processNote(int note, boolean isDown, int pointerId) {
     if (note == this.index && pitch != 0) {
-      setPressed(isDown, index);
+      setPressed(isDown, pointerId);
       return true;
     }
     return false;
@@ -83,8 +85,8 @@ public class Note {
     float right = left + width;
     float height = parent.getHeight();
     if (black) {
-      left += width * 0.75f;
-      right += width * 0.25f;
+      left += width * 0.7f;
+      right += width * 0.3f;
       height *= 0.666666667f;
     } else if (plain) {
       left += width * 0.025f;
@@ -98,25 +100,23 @@ public class Note {
       paint.setStyle(Paint.Style.STROKE);
       paint.setStrokeWidth(halfWidth * 0.05f);
       paint.setColor(0xff66338b);
+      // todo make me better
       canvas.drawCircle(halfWidth, height - halfWidth * 1.5f, halfWidth / 2, paint);
       paint.setAntiAlias(false);
       paint.setStyle(Paint.Style.FILL);
     }
   }
 
-  public void resize(int screenWidth, int screenHeight) {
-    float divisor = black ? 14f : 7f;
-    divisor = 7f;
+  public void resize(int screenWidth) {
     this.width = screenWidth / 7f;
-    // todo height?
   }
 
-  void setPressed(boolean pressed, int index) {
-    if (!pressed && index == this.pressedPointer) {
+  public void setPressed(boolean pressed, int pointerId) {
+    if (!pressed && pointerId == this.pressedPointer) {
       this.pressed = false;
     } else if (pressed) {
       this.pressed = pressed;
-      this.pressedPointer = index;
+      this.pressedPointer = pointerId;
     }
   }
 
@@ -132,8 +132,8 @@ public class Note {
     float[] hsv = new float[3];
     Color.colorToHSV(colour, hsv);
     hsv[1] *= 0.5f;
-    if (hsv[2] == 0) hsv[2] += 0.2f; // black
-    else if (hsv[2] == 1) hsv[2] -= 0.2f; // white
+    if (hsv[2] == 0) hsv[2] += .2f; // black
+    else if (hsv[2] == 1 || hsv[2] == 0.666666666667f) hsv[2] -= .1f; // white
     return Color.HSVToColor(hsv);
   }
 
