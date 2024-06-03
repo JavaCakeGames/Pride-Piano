@@ -1,7 +1,6 @@
 package com.javacakegames.pride;
 
 import static android.media.AudioManager.STREAM_MUSIC;
-
 import static com.javacakegames.pride.Globals.audioMan;
 
 import android.content.Context;
@@ -9,12 +8,15 @@ import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Build;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SoundManager {
 
   private final CopyOnWriteArrayList<Sound> sounds;
+  private final List<Sound> soundsPool;
   private final SoundPool soundPool;
 
   private final int soundId;
@@ -28,6 +30,7 @@ public class SoundManager {
     int MAX_STREAMS = (Globals.supportedFingers << 1) + 1;
 
     sounds = new CopyOnWriteArrayList<>();
+    soundsPool = new ArrayList<>(MAX_STREAMS);
 
     this.maxSystemVolume = audioMan.getStreamMaxVolume(STREAM_MUSIC);
 
@@ -64,7 +67,19 @@ public class SoundManager {
 
   public int play(float pitch) {
     int id = soundPool.play(soundId, startVolume, startVolume, 0, 0, pitch);
-    sounds.add(new Sound(startVolume, id)); // todo use pool, not new
+    Sound soundToAdd = null;
+    for (Sound sound : soundsPool) {
+      if (sound.free) {
+        sound.init(startVolume, id);
+        soundToAdd = sound;
+        break;
+      }
+    }
+    if (soundToAdd == null) {
+      soundToAdd = new Sound(startVolume, id);
+      soundsPool.add(soundToAdd);
+    }
+    sounds.add(soundToAdd);
     return id;
   }
 
@@ -102,6 +117,7 @@ public class SoundManager {
           if (vol == 0) {
             soundPool.stop(sound.streamId);
             sounds.remove(sound);
+            sound.free = true;
           } else {
             soundPool.setVolume(sound.streamId, vol, vol);
           }

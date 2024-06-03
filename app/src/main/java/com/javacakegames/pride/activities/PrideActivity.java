@@ -9,7 +9,6 @@ import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
