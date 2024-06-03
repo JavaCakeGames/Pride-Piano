@@ -15,6 +15,7 @@ public class Globals {
 
   public static final Timer TIMER = new Timer();
   public static int supportedFingers = 1;
+  public static final float TWO_THIRDS = .666666666666666666666666666666666667f;
 
   public static AudioManager audioMan;
   public static Vibrator vibrator;

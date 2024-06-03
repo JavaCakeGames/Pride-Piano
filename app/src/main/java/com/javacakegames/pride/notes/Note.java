@@ -82,6 +82,7 @@ public class Note {
   }
 
   public void draw(Paint paint, Canvas canvas) {
+    if (pitch == 0) return;
     int colour = pressed ? this.pressedColour : this.colour;
     paint.setColor(colour);
     float left = index * width;
@@ -90,7 +91,7 @@ public class Note {
     if (black) {
       left += width * 0.7f;
       right += width * 0.3f;
-      height *= 0.666666667f;
+      height *= Globals.TWO_THIRDS;
     } else if (plain) {
       if (index != 0) left += width * 0.025f;
       if (index != 6) right -= width * 0.025f;
@@ -123,7 +124,7 @@ public class Note {
     if (!pressed && pointerId == this.pressedPointer) {
       this.pressed = false;
     } else if (pressed) {
-      this.pressed = pressed;
+      this.pressed = true;
       this.pressedPointer = pointerId;
     }
   }
@@ -141,7 +142,7 @@ public class Note {
     Color.colorToHSV(colour, hsv);
     hsv[1] *= 0.5f;
     if (hsv[2] == 0) hsv[2] += .2f; // black
-    else if (hsv[2] == 1 || hsv[2] == 0.666666666667f) hsv[2] -= .1f; // white
+    else if (hsv[2] == 1 || hsv[2] == Globals.TWO_THIRDS) hsv[2] -= .1f; // white
     return Color.HSVToColor(hsv);
   }
 

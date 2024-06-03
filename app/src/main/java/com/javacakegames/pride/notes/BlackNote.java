@@ -1,6 +1,7 @@
 package com.javacakegames.pride.notes;
 
 import com.javacakegames.pride.GameView;
+import com.javacakegames.pride.Globals;
 
 public class BlackNote extends Note {
 
@@ -24,7 +25,7 @@ public class BlackNote extends Note {
   @Override
   public boolean process(float screenX, float screenY, boolean down,
                          int pointerId, boolean silent) {
-    if (screenY < getParent().getHeight() * 0.666666667f) {
+    if (screenY < getParent().getHeight() * Globals.TWO_THIRDS) {
       int note = (int) Math.floor(
         (screenX - getWidth() / 2) / getParent().getWidth() * 7
       );

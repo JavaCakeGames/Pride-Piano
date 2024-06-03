@@ -1,0 +1,7 @@
+<resources>
+    <style name="AppTheme" parent="android:Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <!-- Disable splash on Android 12 -->
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+</resources>
