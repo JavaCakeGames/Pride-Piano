@@ -9,9 +9,12 @@ public class BlackNote extends Note {
     0xff000000, 0xff945516, 0x00000000,
     0xffffffff, 0xff7bcce5, 0xfff4aec8
   };
+
+  // f#: 0.995
+
   private static final float[] BLACK_PITCHES = {
-    0.747134188548398f, 0.834133166610544f, 0f,
-    0.984042315523848f, 1.09870595966501f, 1.2267649207462f
+    0.745407733f, 0.836692028f, 0f,
+    0.995f, 1.116849813f, 1.253621625f
   };
 
   public BlackNote(int index, GameView parent, Integer plainColour) {

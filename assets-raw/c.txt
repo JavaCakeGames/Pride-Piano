@@ -1,1 +1,1 @@
-ffmpeg -i gb4.flac -q 3 -fflags +bitexact gb4.ogg
+ffmpeg -i gb4.flac -q 5 -fflags +bitexact ../app/src/main/res/raw/gb4.ogg
