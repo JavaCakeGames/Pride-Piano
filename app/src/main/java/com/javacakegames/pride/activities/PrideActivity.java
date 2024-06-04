@@ -36,9 +36,9 @@ public class PrideActivity extends Activity {
     Globals.init(this);
 
     if (Build.VERSION.SDK_INT >= 21) {
-      this.setTaskDescription(new ActivityManager.TaskDescription(null, null,
-        WhiteNote.WHITE_COLOURS[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1]
-      ));
+      this.setTaskDescription(
+        new ActivityManager.TaskDescription(null, null, getRecentsColour())
+      );
     }
 
     this.gameView = new GameView(this, isPlain());
@@ -67,6 +67,11 @@ public class PrideActivity extends Activity {
 
   boolean isPlain() {
     return false;
+  }
+
+  int getRecentsColour() {
+    return WhiteNote.WHITE_COLOURS
+      [Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1];
   }
 
 }
