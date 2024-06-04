@@ -44,7 +44,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     Integer plainWhite = plain ? 0xffffffff : null;
     if (plainWhite != null && darkMode) plainWhite = 0xffaaaaaa;
     Integer plainBlack = plain ? 0xff000000 : null;
-    if (plainBlack != null && darkMode) plainBlack = 0x00000000;
+    if (plainBlack != null && darkMode) plainBlack = 0xff000000;
 
     for (int i = 0; i < 7; i++) {
       notes[i] = new WhiteNote(i, this, plainWhite);
