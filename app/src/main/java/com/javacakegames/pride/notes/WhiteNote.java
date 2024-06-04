@@ -4,7 +4,7 @@ import com.javacakegames.pride.GameView;
 
 public class WhiteNote extends Note {
 
-  private static final int[] WHITE_COLOURS = {
+  public static final int[] WHITE_COLOURS = {
     0xfffdd817, 0xffe22016, 0xfff28917,
     0xffefe524, 0xff78b82a, 0xff2c58a4, 0xff6d2380
   };
