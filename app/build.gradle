@@ -10,7 +10,7 @@ android {
         applicationId "com.javacakegames.pride"
         minSdk 1
         targetSdk 34
-        versionCode 2
+        versionCode 20
         versionName "2.0"
     }
 
