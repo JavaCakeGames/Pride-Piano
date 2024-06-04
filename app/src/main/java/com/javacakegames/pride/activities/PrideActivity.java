@@ -35,17 +35,12 @@ public class PrideActivity extends Activity {
 
     Globals.init(this);
 
-    if (Build.VERSION.SDK_INT >= 28) { // Support camera cutouts
-      getWindow().getAttributes().layoutInDisplayCutoutMode =
-        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-    }
-
     if (Build.VERSION.SDK_INT >= 21) {
       this.setTaskDescription(new ActivityManager.TaskDescription(null, null,
         WhiteNote.WHITE_COLOURS[Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1]
       ));
     }
-    
+
     this.gameView = new GameView(this, isPlain());
     setContentView(gameView);
   }
