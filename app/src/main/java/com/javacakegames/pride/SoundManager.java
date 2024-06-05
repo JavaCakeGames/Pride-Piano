@@ -20,7 +20,7 @@ public class SoundManager {
   private final SoundPool soundPool;
 
   private final int soundId;
-  private int cacheSoundId;
+  private int cacheStreamId;
   private final int maxSystemVolume;
 
   private float startVolume;
@@ -55,11 +55,11 @@ public class SoundManager {
     // Keep a silent note repeating in background to avoid lag spikes
     if (Build.VERSION.SDK_INT >= 8) {
       soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) ->
-        cacheSoundId = soundPool.play(soundId, 0, 0, 1, -1, 1)
+        cacheStreamId = soundPool.play(soundId, 0, 0, 1, -1, 1)
       );
     } else {
-      while (cacheSoundId == 0) {
-        cacheSoundId = soundPool.play(soundId, 0, 0, 0, -1, 1);
+      while (cacheStreamId == 0) {
+        cacheStreamId = soundPool.play(soundId, 0, 0, 0, -1, 1);
       }
     }
 
@@ -92,11 +92,11 @@ public class SoundManager {
   }
 
   public void appPaused() {
-    soundPool.pause(cacheSoundId);
+    soundPool.pause(cacheStreamId);
   }
 
   public void appResumed() {
-    soundPool.resume(cacheSoundId);
+    soundPool.resume(cacheStreamId);
   }
 
   private class SystemVolumeTask extends TimerTask {
