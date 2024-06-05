@@ -17,6 +17,8 @@ public class Globals {
   public static final Timer TIMER = new Timer();
   public static int supportedFingers = 1;
   public static final float TWO_THIRDS = .666666666666666666666666666666666667f;
+  public static final boolean IS_ARC =
+    Build.DEVICE != null && Build.DEVICE.matches(".+_cheets|cheets_.+");
 
   public static AudioManager audioMan;
   public static Vibrator vibrator;
@@ -25,11 +27,10 @@ public class Globals {
 
     if (Build.VERSION.SDK_INT >= 8) {
       PackageManager packMan = context.getPackageManager();
-      if (packMan.hasSystemFeature(FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND)) {
+      // While jazzhand means >= 5, most devices will be 10.
+      if (IS_ARC || packMan.hasSystemFeature(FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND)) {
         supportedFingers = 10; // Only possible on API 9+
-        // While jazzhand means >= 5, most devices will be 10.
-      } else
-        if (packMan.hasSystemFeature(FEATURE_TOUCHSCREEN_MULTITOUCH)) {
+      } else if (packMan.hasSystemFeature(FEATURE_TOUCHSCREEN_MULTITOUCH)) {
         supportedFingers = 2; // Only on API 8+
       }
     }

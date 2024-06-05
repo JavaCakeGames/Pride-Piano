@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -97,8 +98,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
       super.draw(canvas);
       canvas.drawColor(Color.GRAY);
 
-      for (Note note : notes)
-        note.draw(paint, canvas);
+      for (Note note : notes) note.draw(paint, canvas);
     }
   }
 
@@ -151,8 +151,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
       }
     }
 
-    for (Note note : notes) note.update();
-
+    updateNotes();
     return true;
   }
 
@@ -210,7 +209,39 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         return;
       }
     }
+  }
 
+  /**
+   * Process a keystroke from physical (or I guess on-screen) keyboard
+   * @param keyCode The key code as defined by KeyEvent
+   * @param pressed True if pressed, false if released
+   * @return True if key event handled
+   */
+  public boolean processKeystroke(int keyCode, boolean pressed) {
+    if (keyCode < KeyEvent.KEYCODE_A || keyCode > KeyEvent.KEYCODE_Z)
+      return false;
+
+    switch (keyCode) {
+      case KeyEvent.KEYCODE_Z: notes[0].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_X: notes[1].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_C: notes[2].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_V: notes[3].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_B: notes[4].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_N: notes[5].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_M: notes[6].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_S: notes[7].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_D: notes[8].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_G: notes[10].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_H: notes[11].setPressed(pressed, 256); break;
+      case KeyEvent.KEYCODE_J: notes[12].setPressed(pressed, 256); break;
+    }
+
+    updateNotes();
+    return true;
+  }
+
+  private void updateNotes() {
+    for (Note note : notes) note.update();
   }
 
 }

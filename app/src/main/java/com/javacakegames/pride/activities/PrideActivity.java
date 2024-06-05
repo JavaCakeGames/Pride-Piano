@@ -12,6 +12,8 @@ import android.app.ActivityManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.javacakegames.pride.GameView;
 import com.javacakegames.pride.Globals;
@@ -59,6 +61,23 @@ public class PrideActivity extends Activity {
     // Avoid black screen when device unlocked
     gameView.dirtyCanvas();
     gameView.getSoundMan().appResumed();
+  }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    Toast.makeText(getApplicationContext(), "Hello", Toast.LENGTH_LONG).show();
+    if (event.getRepeatCount() > 0) return true; // Eat long-press menu for kbd
+    // Don't let non-Chromebooks use keyboard. Their keys repeat and cause BIG ISSUES!
+    boolean handled = Globals.IS_ARC && gameView.processKeystroke(keyCode, true);
+    if (!handled) return super.onKeyDown(keyCode, event);
+    return true;
+  }
+
+  @Override
+  public boolean onKeyUp(int keyCode, KeyEvent event) {
+    boolean handled = gameView.processKeystroke(keyCode, false);
+    if (!handled) return super.onKeyUp(keyCode, event);
+    return true;
   }
 
   @Override
