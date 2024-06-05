@@ -52,7 +52,7 @@ public class Note {
 //          parent.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
 //        } else {
         if (Globals.audioMan.getRingerMode() != AudioManager.RINGER_MODE_SILENT)
-          Globals.vibrator.vibrate(33);
+          Globals.vibrator.vibrate(20);
       } else { // released
         soundMan.stop(playID);
       }
