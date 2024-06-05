@@ -41,6 +41,12 @@ public class PrideActivity extends Activity {
   }
 
   @Override
+  protected void onPause() {
+    super.onPause();
+    gameView.getSoundMan().appPaused();
+  }
+
+  @Override
   protected void onResume() {
     super.onResume();
     if (Build.VERSION.SDK_INT >= 19) {
@@ -52,6 +58,7 @@ public class PrideActivity extends Activity {
     }
     // Avoid black screen when device unlocked
     gameView.dirtyCanvas();
+    gameView.getSoundMan().appResumed();
   }
 
   @Override
