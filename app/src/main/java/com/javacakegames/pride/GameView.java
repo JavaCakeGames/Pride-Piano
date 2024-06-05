@@ -72,8 +72,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
       renderTask = new TimerTask() {
         @Override
         public void run() {
-          // Always dirty the canvas; reduces tearing in Gingerbread AVD
-          canvasDirty = true;
+          if (dirtyTimer >= 0) {
+            canvasDirty = true;
+            dirtyTimer--;
+          }
           drawCanvas();
         }
       };

@@ -10,16 +10,11 @@ import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.WindowManager;
 
 import com.javacakegames.pride.GameView;
 import com.javacakegames.pride.Globals;
-import com.javacakegames.pride.R;
 import com.javacakegames.pride.notes.WhiteNote;
 
 import java.util.Calendar;

@@ -1,10 +1,6 @@
 package com.javacakegames.pride.activities;
 
-import android.app.ActivityManager;
 import android.graphics.Color;
-import android.os.Build;
-
-import com.javacakegames.pride.notes.WhiteNote;
 
 import java.util.Calendar;
 
