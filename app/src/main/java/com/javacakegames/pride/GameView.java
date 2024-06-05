@@ -59,11 +59,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
       postOnAnimation(new Runnable() {
         @Override
         public void run() {
-          if (dirtyTimer >= 0) {
-            canvasDirty = true;
-            dirtyTimer--;
-          }
-          drawCanvas();
+          dirtyDraw();
           postOnAnimation(this);
         }
       });
@@ -72,11 +68,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
       renderTask = new TimerTask() {
         @Override
         public void run() {
-          if (dirtyTimer >= 0) {
-            canvasDirty = true;
-            dirtyTimer--;
-          }
-          drawCanvas();
+          dirtyDraw();
         }
       };
       Globals.TIMER.schedule(renderTask, 0, 16);
@@ -162,6 +154,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     for (Note note : notes) note.update();
 
     return true;
+  }
+
+  private void dirtyDraw() {
+    if (dirtyTimer >= 0) {
+      canvasDirty = true;
+      dirtyTimer--;
+    }
+    drawCanvas();
   }
 
   public SoundManager getSoundMan() {
