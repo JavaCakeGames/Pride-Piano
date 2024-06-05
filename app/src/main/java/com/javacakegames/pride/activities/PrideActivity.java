@@ -65,7 +65,6 @@ public class PrideActivity extends Activity {
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    Toast.makeText(getApplicationContext(), "Hello", Toast.LENGTH_LONG).show();
     if (event.getRepeatCount() > 0) return true; // Eat long-press menu for kbd
     // Don't let non-Chromebooks use keyboard. Their keys repeat and cause BIG ISSUES!
     boolean handled = Globals.IS_ARC && gameView.processKeystroke(keyCode, true);
