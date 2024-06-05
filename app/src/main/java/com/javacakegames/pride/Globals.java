@@ -1,5 +1,6 @@
 package com.javacakegames.pride;
 
+import static android.content.pm.PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH;
 import static android.content.pm.PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT;
 import static android.content.pm.PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND;
 
@@ -28,7 +29,7 @@ public class Globals {
         supportedFingers = 10; // Only possible on API 9+
         // While jazzhand means >= 5, most devices will be 10.
       } else
-        if (packMan.hasSystemFeature(FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT)) {
+        if (packMan.hasSystemFeature(FEATURE_TOUCHSCREEN_MULTITOUCH)) {
         supportedFingers = 2; // Only on API 8+
       }
     }
