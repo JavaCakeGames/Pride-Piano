@@ -211,6 +211,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
   }
 
+  public void appPaused() {
+    soundManager.appPaused();
+    for (Note note : notes) note.setPressed(false, -2);
+  }
+
+  public void appResumed() {
+    canvasDirty = true; // Avoid black screen when device unlocked
+    soundManager.appResumed();
+  }
+
   /**
    * Process a keystroke from physical (or I guess on-screen) keyboard
    * @param keyCode The key code as defined by KeyEvent

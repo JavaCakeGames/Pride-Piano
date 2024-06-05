@@ -121,7 +121,7 @@ public class Note {
   }
 
   public void setPressed(boolean pressed, int pointerId) {
-    if (!pressed && pointerId == this.pressedPointer) {
+    if (pointerId == -2 || (!pressed && pointerId == this.pressedPointer)) {
       this.pressed = false;
     } else if (pressed) {
       this.pressed = true;

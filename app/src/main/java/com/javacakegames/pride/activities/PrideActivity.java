@@ -45,7 +45,7 @@ public class PrideActivity extends Activity {
   @Override
   protected void onPause() {
     super.onPause();
-    gameView.getSoundMan().appPaused();
+    gameView.appPaused();
   }
 
   @Override
@@ -58,9 +58,7 @@ public class PrideActivity extends Activity {
           SYSTEM_UI_FLAG_FULLSCREEN | SYSTEM_UI_FLAG_IMMERSIVE
       ); // IMMERSIVE on 19+
     }
-    // Avoid black screen when device unlocked
-    gameView.dirtyCanvas();
-    gameView.getSoundMan().appResumed();
+    gameView.appResumed();
   }
 
   @Override
