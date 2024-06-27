@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
     namespace "com.javacakegames.pride"
 
     defaultConfig {
         applicationId "com.javacakegames.pride"
         minSdk 1
-        targetSdk 34
+        targetSdk 35
         versionCode 41
         versionName "4.1"
     }
