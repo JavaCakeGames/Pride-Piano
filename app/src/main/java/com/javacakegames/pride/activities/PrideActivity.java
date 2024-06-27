@@ -77,12 +77,6 @@ public class PrideActivity extends Activity {
     return true;
   }
 
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    gameView.dirtyCanvas(true);
-  }
-
   boolean isPlain() {
     return false;
   }

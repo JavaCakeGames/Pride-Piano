@@ -56,7 +56,7 @@ public class Note {
       } else { // released
         soundMan.stop(playID);
       }
-      parent.dirtyCanvas();
+      parent.invalidate();
     }
     previousPressed = pressed;
   }

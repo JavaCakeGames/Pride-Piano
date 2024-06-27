@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import com.javacakegames.pride.notes.BlackNote;
 import com.javacakegames.pride.notes.Note;
@@ -18,14 +19,12 @@ import com.javacakegames.pride.notes.WhiteNote;
 
 import java.util.TimerTask;
 
-public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+@SuppressLint("ViewConstructor")
+public class GameView extends View {
 
   private final Paint paint = new Paint(0); // No antialias
   private final SoundManager soundManager;
   private final Note[] notes = new Note[13];
-
-  private boolean canvasDirty = true;
-  private int dirtyTimer;
 
   public GameView(Context context, boolean plain) {
     super(context);
@@ -54,42 +53,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
       notes[i + 7] = new BlackNote(i, this, plainBlack);
     }
 
-    getHolder().addCallback(this);
-
-    if (Build.VERSION.SDK_INT >= 16) {
-      postOnAnimation(new Runnable() {
-        @Override
-        public void run() {
-          dirtyDraw();
-          postOnAnimation(this);
-        }
-      });
-    } else {
-      TimerTask renderTask;
-      renderTask = new TimerTask() {
-        @Override
-        public void run() {
-          dirtyDraw();
-        }
-      };
-      Globals.TIMER.schedule(renderTask, 0, 16);
-    }
-
   }
 
   @Override
-  public void surfaceCreated(SurfaceHolder holder) {
-  }
-
-  @Override
-  public void surfaceChanged(SurfaceHolder holder, int format,
-                             int width, int height) {
-    for (Note note : notes) note.resize(width);
-    drawCanvas();
-  }
-
-  @Override
-  public void surfaceDestroyed(SurfaceHolder holder) {
+  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    super.onSizeChanged(w, h, oldw, oldh);
+    for (Note note : notes) note.resize(w);
   }
 
   @Override
@@ -155,45 +124,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     return true;
   }
 
-  private void dirtyDraw() {
-    if (dirtyTimer >= 0) {
-      canvasDirty = true;
-      dirtyTimer--;
-    }
-    drawCanvas();
-  }
-
   public SoundManager getSoundMan() {
     return soundManager;
-  }
-
-  private void drawCanvas() {
-
-    if (!canvasDirty) return;
-
-    Canvas canvas = null;
-    try {
-      canvas = getHolder().lockCanvas();
-      synchronized (getHolder()) {
-        draw(canvas);
-      }
-    } finally {
-      if (canvas != null) {
-        getHolder().unlockCanvasAndPost(canvas);
-        canvasDirty = false;
-      }
-    }
-  }
-
-  public void dirtyCanvas(boolean prolonged) {
-    canvasDirty = true;
-    // 1 seems like enough, but set to 2 to be safe.
-    // Maybe required due to double buffering?
-    if (prolonged) dirtyTimer = 2;
-  }
-
-  public void dirtyCanvas() {
-    canvasDirty = true;
   }
 
   private void processTouch(float x, float y, int pointerId, boolean down) {
@@ -217,7 +149,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
   }
 
   public void appResumed() {
-    canvasDirty = true; // Avoid black screen when device unlocked
     soundManager.appResumed();
   }
 
