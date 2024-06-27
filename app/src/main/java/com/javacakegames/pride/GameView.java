@@ -55,18 +55,13 @@ public class GameView extends View {
 
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-    super.onSizeChanged(w, h, oldw, oldh);
     for (Note note : notes) note.resize(w);
   }
 
   @Override
-  public void draw(Canvas canvas) {
-    if (canvas != null) {
-      super.draw(canvas);
-      canvas.drawColor(Color.GRAY);
-
-      for (Note note : notes) note.draw(paint, canvas);
-    }
+  protected void onDraw(Canvas canvas) {
+    canvas.drawColor(Color.GRAY);
+    for (Note note : notes) note.draw(paint, canvas);
   }
 
   @SuppressLint({"ClickableViewAccessibility", "NewApi"})
