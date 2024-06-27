@@ -9,8 +9,6 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 
 import com.javacakegames.pride.notes.BlackNote;
