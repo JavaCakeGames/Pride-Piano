@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SoundManager {
 
@@ -24,6 +26,8 @@ public class SoundManager {
   private final int maxSystemVolume;
 
   private float startVolume;
+
+  private final ExecutorService executorService;
 
   public SoundManager(Context context) {
 
@@ -63,32 +67,42 @@ public class SoundManager {
       }
     }
 
+    executorService = Executors.newCachedThreadPool();
+
   }
 
   public int play(float pitch) {
-    int id = soundPool.play(soundId, startVolume, startVolume, 0, 0, pitch);
+
     Sound soundToAdd = null;
     for (Sound sound : soundsPool) {
       if (sound.free) {
-        sound.init(startVolume, id);
+        sound.init(startVolume);
         soundToAdd = sound;
         break;
       }
     }
     if (soundToAdd == null) {
-      soundToAdd = new Sound(startVolume, id);
+      soundToAdd = new Sound(startVolume);
       soundsPool.add(soundToAdd);
     }
     sounds.add(soundToAdd);
-    return id;
+
+    Sound finalSoundToAdd = soundToAdd;
+    executorService.submit(() -> {
+      finalSoundToAdd.osId = soundPool.play(soundId, startVolume, startVolume, 0, 0, pitch);
+    });
+
+    return soundToAdd.myId;
   }
 
   public void stop(int id) {
-    for (Sound sound : sounds) {
-      if (sound.streamId == id) {
-        sound.fading = true;
+    executorService.submit(() -> {
+      for (Sound sound : sounds) {
+        if (sound.myId == id) {
+          sound.fading = true;
+        }
       }
-    }
+    });
   }
 
   public void appPaused() {
@@ -123,11 +137,11 @@ public class SoundManager {
           sound.currVolume -= sound.volumeStep;
           float vol = Math.max(0, sound.currVolume);
           if (vol == 0) {
-            soundPool.stop(sound.streamId);
+            soundPool.stop(sound.osId);
             sounds.remove(sound);
             sound.free = true;
           } else {
-            soundPool.setVolume(sound.streamId, vol, vol);
+            soundPool.setVolume(sound.osId, vol, vol);
           }
         }
       }

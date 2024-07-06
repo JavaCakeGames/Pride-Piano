@@ -10,11 +10,13 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Vibrator;
 
+import java.util.Random;
 import java.util.Timer;
 
 public class Globals {
 
   public static final Timer TIMER = new Timer();
+  public static final Random RNG = new Random();
   public static int supportedFingers = 1;
   public static final float TWO_THIRDS = .666666666666666666666666666666666667f;
   public static final boolean IS_ARC =

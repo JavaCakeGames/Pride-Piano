@@ -45,7 +45,6 @@ public class Note {
     if (pressed != previousPressed) {
       if (pressed) {
         playID = soundMan.play(pitch);
-        // https://github.com/libgdx/libgdx/pull/6243
         // https://source.android.com/devices/input/haptics/haptics-ux-design
         // Doesn't work
 //        if (Build.VERSION.SDK_INT >= 8) {
