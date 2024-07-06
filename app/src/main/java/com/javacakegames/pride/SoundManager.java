@@ -25,6 +25,7 @@ public class SoundManager {
   private final int maxSystemVolume;
 
   private float startVolume;
+  private int streamCounter;
 
   private final ExecutorService executorService;
 
@@ -63,13 +64,15 @@ public class SoundManager {
     Sound soundToAdd = null;
     for (Sound sound : soundsPool) {
       if (sound.free) {
-        sound.init(startVolume);
+        sound.init(startVolume, streamCounter);
+        streamCounter++;
         soundToAdd = sound;
         break;
       }
     }
     if (soundToAdd == null) {
-      soundToAdd = new Sound(startVolume);
+      soundToAdd = new Sound(startVolume, streamCounter);
+      streamCounter++;
       soundsPool.add(soundToAdd);
     }
     sounds.add(soundToAdd);

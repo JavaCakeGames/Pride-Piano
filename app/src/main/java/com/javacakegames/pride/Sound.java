@@ -8,14 +8,14 @@ public class Sound {
   public boolean fading;
   public boolean free;
 
-  public Sound(float startVolume) {
-    init(startVolume);
+  public Sound(float startVolume, int streamCount) {
+    init(startVolume, streamCount);
   }
 
-  public void init(float startVolume) {
+  public void init(float startVolume, int streamCount) {
     this.startVolume = this.currVolume = startVolume;
     this.volumeStep = startVolume * 0.04f;
-    this.myId = Globals.RNG.nextInt();
+    this.myId = streamCount;
     this.fading = false;
     this.free = false;
   }
