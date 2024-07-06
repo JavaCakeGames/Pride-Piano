@@ -152,7 +152,7 @@ public class GameView extends View {
    * @return True if key event handled
    */
   public boolean processKeystroke(int keyCode, boolean pressed) {
-    if (keyCode < KeyEvent.KEYCODE_A || keyCode > KeyEvent.KEYCODE_Z && keyCode != KeyEvent.KEYCODE_SPACE)
+    if ((keyCode < KeyEvent.KEYCODE_A || keyCode > KeyEvent.KEYCODE_Z) && keyCode != KeyEvent.KEYCODE_SPACE)
       return false;
 
     switch (keyCode) {
@@ -169,18 +169,7 @@ public class GameView extends View {
       case KeyEvent.KEYCODE_H: notes[11].setPressed(pressed, 256); break;
       case KeyEvent.KEYCODE_J: notes[12].setPressed(pressed, 256); break;
       case KeyEvent.KEYCODE_SPACE:
-        notes[0].setPressed(pressed, 257);
-        notes[1].setPressed(pressed, 257);
-        notes[2].setPressed(pressed, 257);
-        notes[3].setPressed(pressed, 257);
-        notes[4].setPressed(pressed, 257);
-        notes[5].setPressed(pressed, 257);
-        notes[6].setPressed(pressed, 257);
-        notes[7].setPressed(pressed, 257);
-        notes[8].setPressed(pressed, 257);
-        notes[10].setPressed(pressed, 257);
-        notes[11].setPressed(pressed, 257);
-        notes[12].setPressed(pressed, 257);
+        for (Note note : notes) note.setPressed(pressed, 257);
         break;
     }
 

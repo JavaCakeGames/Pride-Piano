@@ -9,11 +9,9 @@ import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 import com.javacakegames.pride.GameView;
 import com.javacakegames.pride.Globals;
@@ -62,19 +60,17 @@ public class PrideActivity extends Activity {
   }
 
   @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (event.getRepeatCount() > 0) return true; // Eat long-press menu for kbd
-    // Don't let non-Chromebooks use keyboard. Their keys repeat and cause BIG ISSUES!
-    boolean handled = gameView.processKeystroke(keyCode, true);
-    if (!handled) return super.onKeyDown(keyCode, event);
-    return true;
-  }
-
-  @Override
-  public boolean onKeyUp(int keyCode, KeyEvent event) {
-    boolean handled = gameView.processKeystroke(keyCode, false);
-    if (!handled) return super.onKeyUp(keyCode, event);
-    return true;
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    // Don't let non-Chromebooks use keyboard. Keys repeat and cause BIG ISSUES!
+    if (!Globals.IS_ARC) return super.dispatchKeyEvent(event);
+    int keyCode = event.getKeyCode();
+    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+      if (event.getRepeatCount() > 0) return true; // Eat long-press menu for kbd
+      return gameView.processKeystroke(keyCode, true);
+    } else if (event.getAction() == KeyEvent.ACTION_UP) {
+      return gameView.processKeystroke(keyCode, false);
+    }
+    return false;
   }
 
   boolean isPlain() {

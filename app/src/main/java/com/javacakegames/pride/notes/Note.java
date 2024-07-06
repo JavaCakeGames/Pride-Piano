@@ -42,6 +42,7 @@ public class Note {
   }
 
   public void update() {
+    if (pitch == 0) return;
     if (pressed != previousPressed) {
       if (pressed) {
         playID = soundMan.play(pitch);
