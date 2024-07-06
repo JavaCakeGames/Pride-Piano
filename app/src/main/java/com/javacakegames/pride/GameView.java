@@ -15,8 +15,6 @@ import com.javacakegames.pride.notes.BlackNote;
 import com.javacakegames.pride.notes.Note;
 import com.javacakegames.pride.notes.WhiteNote;
 
-import java.util.TimerTask;
-
 @SuppressLint("ViewConstructor")
 public class GameView extends View {
 
@@ -64,11 +62,9 @@ public class GameView extends View {
     for (Note note : notes) note.draw(paint, canvas);
   }
 
-  @SuppressLint({"ClickableViewAccessibility", "NewApi"})
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-
-    if (Globals.supportedFingers >= 2) {
+    if (Build.VERSION.SDK_INT >= 8) {
       int index;
       switch (event.getActionMasked()) {
         case MotionEvent.ACTION_DOWN:
@@ -137,12 +133,7 @@ public class GameView extends View {
   }
 
   public void appPaused() {
-    soundManager.appPaused();
     for (Note note : notes) note.setPressed(false, -2);
-  }
-
-  public void appResumed() {
-    soundManager.appResumed();
   }
 
   /**
@@ -152,9 +143,6 @@ public class GameView extends View {
    * @return True if key event handled
    */
   public boolean processKeystroke(int keyCode, boolean pressed) {
-    if ((keyCode < KeyEvent.KEYCODE_A || keyCode > KeyEvent.KEYCODE_Z) && keyCode != KeyEvent.KEYCODE_SPACE)
-      return false;
-
     switch (keyCode) {
       case KeyEvent.KEYCODE_Z: notes[0].setPressed(pressed, 256); break;
       case KeyEvent.KEYCODE_X: notes[1].setPressed(pressed, 256); break;
@@ -169,8 +157,10 @@ public class GameView extends View {
       case KeyEvent.KEYCODE_H: notes[11].setPressed(pressed, 256); break;
       case KeyEvent.KEYCODE_J: notes[12].setPressed(pressed, 256); break;
       case KeyEvent.KEYCODE_SPACE:
+      case KeyEvent.KEYCODE_MENU:
         for (Note note : notes) note.setPressed(pressed, 257);
         break;
+      default: return false;
     }
 
     updateNotes();

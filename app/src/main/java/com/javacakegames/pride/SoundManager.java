@@ -22,7 +22,6 @@ public class SoundManager {
   private final SoundPool soundPool;
 
   private final int soundId;
-  private int cacheStreamId;
   private final int maxSystemVolume;
 
   private float startVolume;
@@ -31,8 +30,7 @@ public class SoundManager {
 
   public SoundManager(Context context) {
 
-    // On most devices, 21 max streams. 32 is OS limit.
-    int MAX_STREAMS = (Globals.supportedFingers << 1) + 1;
+    int MAX_STREAMS = 24; // 32 is OS limit
 
     sounds = new CopyOnWriteArrayList<>();
     soundsPool = new ArrayList<>(MAX_STREAMS);
@@ -55,17 +53,6 @@ public class SoundManager {
 
     Globals.TIMER.schedule(new SystemVolumeTask(), 0, 1000);
     Globals.TIMER.schedule(new StopTask(), 0, 50);
-
-    // Keep a silent note repeating in background to avoid lag spikes
-    if (Build.VERSION.SDK_INT >= 8) {
-      soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) ->
-        cacheStreamId = soundPool.play(soundId, 0, 0, 1, -1, 1)
-      );
-    } else {
-      while (cacheStreamId == 0) {
-        cacheStreamId = soundPool.play(soundId, 0, 0, 0, -1, 1);
-      }
-    }
 
     executorService = Executors.newCachedThreadPool();
 
@@ -103,14 +90,6 @@ public class SoundManager {
         }
       }
     });
-  }
-
-  public void appPaused() {
-    soundPool.pause(cacheStreamId);
-  }
-
-  public void appResumed() {
-    soundPool.resume(cacheStreamId);
   }
 
   private class SystemVolumeTask extends TimerTask {

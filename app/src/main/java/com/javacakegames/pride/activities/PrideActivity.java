@@ -9,6 +9,7 @@ import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -29,6 +30,7 @@ public class PrideActivity extends Activity {
     super.onCreate(savedInstanceState);
 
     Globals.init(this);
+    setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
     if (Build.VERSION.SDK_INT >= 21) {
       this.setTaskDescription(
@@ -56,21 +58,18 @@ public class PrideActivity extends Activity {
           SYSTEM_UI_FLAG_FULLSCREEN | SYSTEM_UI_FLAG_IMMERSIVE
       ); // IMMERSIVE on 19+
     }
-    gameView.appResumed();
   }
 
   @Override
   public boolean dispatchKeyEvent(KeyEvent event) {
-    // Don't let non-Chromebooks use keyboard. Keys repeat and cause BIG ISSUES!
-    if (!Globals.IS_ARC) return super.dispatchKeyEvent(event);
     int keyCode = event.getKeyCode();
-    if (event.getAction() == KeyEvent.ACTION_DOWN) {
-      if (event.getRepeatCount() > 0) return true; // Eat long-press menu for kbd
-      return gameView.processKeystroke(keyCode, true);
+    boolean handled = false;
+    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+      handled = gameView.processKeystroke(keyCode, true);
     } else if (event.getAction() == KeyEvent.ACTION_UP) {
-      return gameView.processKeystroke(keyCode, false);
+      handled = gameView.processKeystroke(keyCode, false);
     }
-    return false;
+    return handled || super.dispatchKeyEvent(event);
   }
 
   boolean isPlain() {
