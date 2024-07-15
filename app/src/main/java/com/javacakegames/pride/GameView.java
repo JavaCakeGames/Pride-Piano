@@ -25,6 +25,8 @@ public class GameView extends View {
   public GameView(Context context, boolean plain) {
     super(context);
 
+    this.setBackgroundColor(Color.GRAY);
+
     paint.setDither(false);
     soundManager = new SoundManager(context);
 
@@ -58,7 +60,6 @@ public class GameView extends View {
 
   @Override
   protected void onDraw(Canvas canvas) {
-    canvas.drawColor(Color.GRAY);
     for (Note note : notes) note.draw(paint, canvas);
   }
 
