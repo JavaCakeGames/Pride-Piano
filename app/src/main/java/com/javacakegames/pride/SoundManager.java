@@ -99,11 +99,14 @@ public class SoundManager {
 
     @Override
     public void run() {
-      if (Build.VERSION.SDK_INT >= 5 && !audioMan.isWiredHeadsetOn()) {
-        startVolume = Math.min(Globals.TWO_THIRDS, // Louder for internal speaker
-          (float) audioMan.getStreamVolume(STREAM_MUSIC) / maxSystemVolume);
-      } else {
-        startVolume = 1;
+      if (Globals.IS_ARC) startVolume = .33333333333333333333f;
+      else {
+        if (Build.VERSION.SDK_INT >= 5 && !audioMan.isWiredHeadsetOn()) {
+          startVolume = Math.min(Globals.TWO_THIRDS, // Louder for internal speaker
+            (float) audioMan.getStreamVolume(STREAM_MUSIC) / maxSystemVolume);
+        } else {
+          startVolume = 1;
+        }
       }
     }
 

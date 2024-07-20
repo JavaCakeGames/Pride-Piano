@@ -121,8 +121,6 @@ public class Note {
   }
 
   public void setPressed(boolean pressed, int pointerId) {
-    // Don't let non-Chromebooks use keyboard. Keys repeat and cause BIG ISSUES!
-    if (pointerId == 256 && Globals.IS_ARC) return;
     if (pointerId == -2 || (!pressed && pointerId == this.pressedPointer)) {
       this.pressed = false;
     } else if (pressed) {
