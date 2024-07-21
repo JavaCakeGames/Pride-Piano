@@ -51,6 +51,10 @@ public class GameView extends View {
       notes[i + 7] = new BlackNote(i, this, plainBlack);
     }
 
+    if (Build.VERSION.SDK_INT >= 26) setDefaultFocusHighlightEnabled(false);
+    setFocusableInTouchMode(true);
+    requestFocus();
+
   }
 
   @Override
@@ -80,8 +84,7 @@ public class GameView extends View {
           // https://stackoverflow.com/a/10954685
 
           int pointerCount = event.getPointerCount();
-          for(int pointerIdx = 0; pointerIdx < pointerCount; pointerIdx++)
-          {
+          for(int pointerIdx = 0; pointerIdx < pointerCount; pointerIdx++) {
             int pointerId = event.getPointerId(pointerIdx);
             processTouch(
               event.getX(pointerIdx), event.getY(pointerIdx),
@@ -112,6 +115,17 @@ public class GameView extends View {
 
     updateNotes();
     return true;
+  }
+
+  @Override
+  public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+    boolean handled = false;
+    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+      handled = processKeystroke(keyCode, true);
+    } else if (event.getAction() == KeyEvent.ACTION_UP) {
+      handled = processKeystroke(keyCode, false);
+    }
+    return handled || super.onKeyPreIme(keyCode, event);
   }
 
   public SoundManager getSoundMan() {

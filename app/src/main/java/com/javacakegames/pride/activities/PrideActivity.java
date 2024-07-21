@@ -60,18 +60,6 @@ public class PrideActivity extends Activity {
     }
   }
 
-  @Override
-  public boolean dispatchKeyEvent(KeyEvent event) {
-    int keyCode = event.getKeyCode();
-    boolean handled = false;
-    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
-      handled = gameView.processKeystroke(keyCode, true);
-    } else if (event.getAction() == KeyEvent.ACTION_UP) {
-      handled = gameView.processKeystroke(keyCode, false);
-    }
-    return handled || super.dispatchKeyEvent(event);
-  }
-
   boolean isPlain() {
     return false;
   }
