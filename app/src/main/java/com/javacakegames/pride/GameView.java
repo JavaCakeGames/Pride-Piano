@@ -1,5 +1,7 @@
 package com.javacakegames.pride;
 
+import static android.view.KeyEvent.*;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -82,7 +84,6 @@ public class GameView extends View {
           break;
         case MotionEvent.ACTION_MOVE:
           // https://stackoverflow.com/a/10954685
-
           int pointerCount = event.getPointerCount();
           for(int pointerIdx = 0; pointerIdx < pointerCount; pointerIdx++) {
             int pointerId = event.getPointerId(pointerIdx);
@@ -113,16 +114,15 @@ public class GameView extends View {
       }
     }
 
-    updateNotes();
-    return true;
+    return updateNotes();
   }
 
   @Override
   public boolean onKeyPreIme(int keyCode, KeyEvent event) {
     boolean handled = false;
-    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+    if (event.getAction() == ACTION_DOWN && event.getRepeatCount() == 0) {
       handled = processKeystroke(keyCode, true);
-    } else if (event.getAction() == KeyEvent.ACTION_UP) {
+    } else if (event.getAction() == ACTION_UP) {
       handled = processKeystroke(keyCode, false);
     }
     return handled || super.onKeyPreIme(keyCode, event);
@@ -159,31 +159,31 @@ public class GameView extends View {
    */
   public boolean processKeystroke(int keyCode, boolean pressed) {
     switch (keyCode) {
-      case KeyEvent.KEYCODE_Z: notes[0].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_X: notes[1].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_C: notes[2].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_V: notes[3].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_B: notes[4].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_N: notes[5].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_M: notes[6].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_S: notes[7].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_D: notes[8].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_G: notes[10].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_H: notes[11].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_J: notes[12].setPressed(pressed, 256); break;
-      case KeyEvent.KEYCODE_SPACE:
-      case KeyEvent.KEYCODE_MENU:
+      case KEYCODE_Z: notes[0].setPressed(pressed, 256); break;
+      case KEYCODE_X: notes[1].setPressed(pressed, 256); break;
+      case KEYCODE_C: notes[2].setPressed(pressed, 256); break;
+      case KEYCODE_V: notes[3].setPressed(pressed, 256); break;
+      case KEYCODE_B: notes[4].setPressed(pressed, 256); break;
+      case KEYCODE_N: notes[5].setPressed(pressed, 256); break;
+      case KEYCODE_M: notes[6].setPressed(pressed, 256); break;
+      case KEYCODE_S: notes[7].setPressed(pressed, 256); break;
+      case KEYCODE_D: notes[8].setPressed(pressed, 256); break;
+      case KEYCODE_G: notes[10].setPressed(pressed, 256); break;
+      case KEYCODE_H: notes[11].setPressed(pressed, 256); break;
+      case KEYCODE_J: notes[12].setPressed(pressed, 256); break;
+      case KEYCODE_SPACE:
+      case KEYCODE_MENU:
         for (Note note : notes) note.setPressed(pressed, 257);
         break;
       default: return false;
     }
 
-    updateNotes();
-    return true;
+    return updateNotes();
   }
 
-  private void updateNotes() {
+  private boolean updateNotes() {
     for (Note note : notes) note.update();
+    return true;
   }
 
 }
