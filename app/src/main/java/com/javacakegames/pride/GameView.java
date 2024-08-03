@@ -71,7 +71,7 @@ public class GameView extends View {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
-    if (Build.VERSION.SDK_INT >= 1) {
+    if (Build.VERSION.SDK_INT >= 8) {
       int index;
       switch (event.getActionMasked()) {
         case MotionEvent.ACTION_DOWN:
