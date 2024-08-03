@@ -12,7 +12,8 @@
   <application
     android:icon="@drawable/ic_pride"
     android:label="Pride Piano"
-    android:theme="@style/AppTheme">
+    android:theme="@style/AppTheme"
+    android:enableOnBackInvokedCallback="true">
 
     <!-- consider other landscapes https://stackoverflow.com/a/28644266/ -->
     <activity
