@@ -109,11 +109,13 @@ public class SoundManager {
       soundToAdd = new Sound(startVolume, streamCounter++);
       soundsPool.add(soundToAdd);
     }
-    sounds.add(soundToAdd);
 
     Sound finalSoundToAdd = soundToAdd;
-    soundHandler.post(() -> finalSoundToAdd.osId =
-      soundPool.play(soundId, startVolume, startVolume, 0, 0, pitch));
+    soundHandler.post(() -> {
+      sounds.add(finalSoundToAdd);
+      finalSoundToAdd.osId =
+        soundPool.play(soundId, startVolume, startVolume, 0, 0, pitch);
+    });
 
     return soundToAdd.myId;
   }
