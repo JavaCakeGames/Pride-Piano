@@ -3,21 +3,22 @@ plugins {
 }
 
 android {
-    compileSdk 35
+    compileSdk = 36
     namespace "com.javacakegames.pride"
 
     defaultConfig {
         applicationId "com.javacakegames.pride"
         minSdk 1
-        targetSdk 35
-        versionCode 60
-        versionName "6.0"
+        targetSdk 36
+        versionCode 61
+        versionName "6.1"
     }
 
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
