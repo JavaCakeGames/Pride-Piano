@@ -12,7 +12,6 @@ import android.app.ActivityManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.KeyEvent;
 
 import com.javacakegames.pride.GameView;
 import com.javacakegames.pride.Globals;
